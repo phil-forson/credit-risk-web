@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -189,6 +189,21 @@ export default function Home() {
   const [explanation, setExplanation] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Check initially
+    if (typeof window !== "undefined") {
+      checkMobile();
+    }
+
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const modelRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
@@ -363,7 +378,7 @@ export default function Home() {
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-white/20 to-transparent opacity-50" />
 
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-semibold">Risk Calculator</h2>
               <p className="text-sm text-gray-500 mt-1">
@@ -373,7 +388,7 @@ export default function Home() {
             </div>
             <button
               onClick={fillSample}
-              className="text-xs text-gray-400 hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+              className="text-xs text-gray-400 hover:text-white underline underline-offset-4 transition-colors cursor-pointer w-full md:w-auto text-left mt-3 md:mt-0"
             >
               Load Sample Data
             </button>
@@ -493,7 +508,11 @@ export default function Home() {
                         <BarChart
                           data={waterfallData}
                           layout="vertical"
-                          margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+                          margin={
+                            isMobile
+                              ? { top: 20, right: 10, left: -20, bottom: 20 }
+                              : { top: 20, right: 30, left: 40, bottom: 20 }
+                          }
                         >
                           <CartesianGrid
                             strokeDasharray="3 3"
@@ -775,7 +794,11 @@ export default function Home() {
                     <BarChart
                       data={SHAP_DATA}
                       layout="vertical"
-                      margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                      margin={
+                        isMobile
+                          ? { top: 5, right: 10, left: -20, bottom: 5 }
+                          : { top: 5, right: 30, left: 40, bottom: 5 }
+                      }
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
